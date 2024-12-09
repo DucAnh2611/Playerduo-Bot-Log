@@ -17,12 +17,16 @@ SepayRoutes.post(
 
         const { authorization } = headers;
         if (!authorization) {
-            return res.status(404).json({ ok: false });
+            return res
+                .status(404)
+                .json({ ok: false, message: "Missing apikey" });
         }
 
         const [type, apiKey] = authorization.split(" ");
         if (apiKey !== Configs.sepay.api_key) {
-            return res.status(401).json({ ok: false });
+            return res
+                .status(401)
+                .json({ ok: false, message: "Api key wrong" });
         }
 
         next();
@@ -47,7 +51,10 @@ SepayRoutes.post(
                 $gte: new Date(),
             },
         }).populate("player");
-        if (!findTransaction) return res.status(404).json({ ok: false });
+        if (!findTransaction)
+            return res
+                .status(404)
+                .json({ ok: false, message: "No transaction" });
 
         const transactionData = findTransaction.toObject();
         const { total, totalPaid, history, player } = transactionData;
@@ -76,7 +83,10 @@ SepayRoutes.post(
 
         await guild.members.fetch();
         const getUser = guild.members.cache.find((i) => i.id === player.id);
-        if (!getUser) return res.status(404).json({ ok: false });
+        if (!getUser)
+            return res
+                .status(404)
+                .json({ ok: false, message: "No user in guild" });
 
         if (!findNotificationChanel) {
             await guild.channels.create({
