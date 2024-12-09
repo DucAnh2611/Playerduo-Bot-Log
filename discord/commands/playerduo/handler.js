@@ -59,7 +59,7 @@ async function commandPlayduoHandler(interaction) {
         name: e.name,
     }));
 
-    if (memberRoles.find((i) => e.name === "Duo")) {
+    if (memberRoles.find((i) => i.name === "Duo")) {
         await interaction.reply(
             `${
                 getMember.nickname ||
