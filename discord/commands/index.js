@@ -2,6 +2,7 @@ const { REST, Routes } = require("discord.js");
 const Configs = require("../../configs");
 const DiscordCommandsRent = require("./thue/command");
 const DiscordCommandPlayduo = require("./playerduo/command");
+const DiscordCommandStatistic = require("./thong-ke/command");
 
 const RegistryDiscordCommands = async () => {
     try {
@@ -10,7 +11,11 @@ const RegistryDiscordCommands = async () => {
         );
 
         await rest.put(Routes.applicationCommands(Configs.discord.client_id), {
-            body: [DiscordCommandsRent, DiscordCommandPlayduo],
+            body: [
+                DiscordCommandsRent,
+                DiscordCommandPlayduo,
+                DiscordCommandStatistic,
+            ],
         });
     } catch (error) {
         console.error("Error fetching data:", error);

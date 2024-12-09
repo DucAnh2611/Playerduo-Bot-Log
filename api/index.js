@@ -16,6 +16,9 @@ function InitApp() {
     app.use(bodyParser.urlencoded({ extended: true }));
 
     app.use("/sepay", SepayRoutes);
+    app.get("/", (req, res) => {
+        return res.json({ start: true });
+    });
 
     app.listen(Configs.app.port, () => {
         console.log("listening to port:", Configs.app.port);
