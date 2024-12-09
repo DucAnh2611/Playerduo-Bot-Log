@@ -6,6 +6,7 @@ const Configs = {
     app: {
         env: env.NODE_ENV || "dev",
         port: env.PORT || 3000,
+        url: env.APP_URL || "http://localhost:3000",
     },
     discord: {
         client_id: env.DISCORD_CLIENT_ID,

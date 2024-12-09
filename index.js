@@ -1,4 +1,5 @@
 const InitApp = require("./api");
+const { job } = require("./cron");
 const InitDatabase = require("./db");
 const { InitClientDiscord } = require("./discord");
 
@@ -9,3 +10,5 @@ function main() {
 }
 
 main();
+
+job.start();

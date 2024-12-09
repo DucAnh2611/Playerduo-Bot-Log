@@ -16,7 +16,7 @@ function InitApp() {
     app.use(bodyParser.urlencoded({ extended: true }));
 
     app.use("/sepay", SepayRoutes);
-    app.get("/", (req, res) => {
+    app.get("/restart", (req, res) => {
         return res.json({ start: true });
     });
 
