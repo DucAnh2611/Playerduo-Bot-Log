@@ -129,7 +129,10 @@ SepayRoutes.post(
                 },
                 {
                     name: "Ngày tạo",
-                    value: convertTime(transactionData.createdAt, 7),
+                    value: convertTime(
+                        transactionData.createdAt,
+                        7
+                    ).toLocaleString(),
                 },
             ])
             .setFooter({
