@@ -59,7 +59,7 @@ async function commandPlayduoHandler(interaction) {
         name: e.name,
     }));
 
-    if (memberRoles.find((i) => i.name === "Duo")) {
+    if (!memberRoles.find((i) => i.name === "Duo")) {
         await interaction.reply(
             `${
                 getMember.nickname ||
@@ -70,15 +70,20 @@ async function commandPlayduoHandler(interaction) {
         return;
     }
 
-    let player = await PlayerModel.findOne({ id: getMember.user.id });
+    let player = await PlayerModel.findOne({
+        userId: getMember.user.id,
+        guildId: interaction.guildId,
+    });
     const body = {
-        id: getMember.user.id,
+        userId: getMember.user.id,
+        guildId: interaction.guildId,
         link: selections.link,
         bankCode: selections.bankCode,
         bankNum: selections.bankNum,
         bankName: selections.bankName,
         price: selections.price,
     };
+
     if (!player) {
         const playerInstance = new PlayerModel(body);
         await playerInstance.save();
@@ -86,7 +91,7 @@ async function commandPlayduoHandler(interaction) {
         const { _id, ...dataP } = player.toObject();
 
         await PlayerModel.updateOne(
-            { id: getMember.user.id },
+            { _id: player._id },
             {
                 ...dataP,
                 ...body,

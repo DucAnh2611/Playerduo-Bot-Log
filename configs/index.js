@@ -11,10 +11,6 @@ const Configs = {
     discord: {
         client_id: env.DISCORD_CLIENT_ID,
         discord_bot_token: env.DISCORD_BOT_TOKEN,
-        guild: {
-            dev: env.DISCORD_DEV_GUILD,
-            prod: env.DISCORD_PROD_GUILD,
-        },
     },
     database: {
         uri: env.DATABASE_URI,

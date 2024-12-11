@@ -44,7 +44,10 @@ const commandRentHandler = async (interaction) => {
         return;
     }
 
-    const searchPlayer = await PlayerModel.findOne({ id: getMember.user.id });
+    const searchPlayer = await PlayerModel.findOne({
+        userId: getMember.user.id,
+        guildId: interaction.guildId,
+    });
     if (!searchPlayer) {
         await interaction.reply(
             `${
@@ -70,7 +73,7 @@ const commandRentHandler = async (interaction) => {
     const price = selections.price ? selections.price : playerData.price;
 
     const transactionInstance = new TransactionModel({
-        player: playerData._id,
+        player: searchPlayer._id,
         snapshot: {
             duration: selections.duration,
             price: price,

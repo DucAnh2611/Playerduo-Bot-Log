@@ -7,40 +7,17 @@ const Configs = require("../../configs");
 const TransactionModel = require("../../db/models/transactions");
 const { getClientDiscord } = require("../../discord");
 const BANKS_LIST = require("../../const/bank");
+const CheckApiKey = require("../../middleware/api-key");
+const convertTime = require("../../util/time");
 
 const SepayRoutes = require("express").Router();
 
 SepayRoutes.post(
     "/pay-rent",
-    (req, res, next) => {
-        const headers = req.headers;
-
-        const { authorization } = headers;
-        if (!authorization) {
-            return res
-                .status(404)
-                .json({ ok: false, message: "Missing apikey" });
-        }
-
-        const [type, apiKey] = authorization.split(" ");
-        if (apiKey !== Configs.sepay.api_key) {
-            return res
-                .status(401)
-                .json({ ok: false, message: "Api key wrong" });
-        }
-
-        next();
-    },
+    CheckApiKey(Configs.sepay.api_key),
     async (req, res, next) => {
         const body = req.body;
-        const {
-            transferAmount,
-            referenceCode,
-            content,
-            transactionDate,
-            description,
-            code,
-        } = body;
+        const { transferAmount, code } = body;
 
         const transactionCode = code.slice(2, code.length);
 
@@ -71,18 +48,16 @@ SepayRoutes.post(
         );
 
         const client = getClientDiscord();
-        const guild = await client.guilds.fetch(
-            Configs.discord.guild[Configs.app.env === "dev" ? "dev" : "prod"]
-        );
+        const guild = await client.guilds.fetch(player.guildId);
 
         const chanels = guild.channels.cache;
-        const channelName = `thong-bao-chuyen-tien-${player.id}`;
+        const channelName = `thong-bao-chuyen-tien-${player.userId}`;
         const findNotificationChanel = chanels.find(
             (i) => i.name === channelName
         );
 
         await guild.members.fetch();
-        const getUser = guild.members.cache.find((i) => i.id === player.id);
+        const getUser = guild.members.cache.find((i) => i.id === player.userId);
         if (!getUser)
             return res
                 .status(404)
@@ -154,9 +129,7 @@ SepayRoutes.post(
                 },
                 {
                     name: "Ngày tạo",
-                    value: new Date(transactionData.createdAt).toLocaleString(
-                        "vi"
-                    ),
+                    value: convertTime(transactionData.createdAt, 7),
                 },
             ])
             .setFooter({

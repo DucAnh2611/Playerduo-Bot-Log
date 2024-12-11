@@ -30,9 +30,6 @@ const InitClientDiscord = () => {
         client.on("ready", () => {
             console.log(`Logged in as ${client.user.tag}!`);
             clientDiscord = client;
-            client.guilds.cache.forEach((guild) => {
-                console.log(`Guild Name: ${guild.name}, Guild ID: ${guild.id}`);
-            });
         });
 
         roleSelection(client);

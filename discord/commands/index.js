@@ -3,6 +3,7 @@ const Configs = require("../../configs");
 const DiscordCommandsRent = require("./thue/command");
 const DiscordCommandPlayduo = require("./playerduo/command");
 const DiscordCommandStatistic = require("./thong-ke/command");
+const DiscordCommandInfo = require("./thong-tin/command");
 
 const RegistryDiscordCommands = async () => {
     try {
@@ -15,6 +16,7 @@ const RegistryDiscordCommands = async () => {
                 DiscordCommandsRent,
                 DiscordCommandPlayduo,
                 DiscordCommandStatistic,
+                DiscordCommandInfo,
             ],
         });
     } catch (error) {

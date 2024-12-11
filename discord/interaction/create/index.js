@@ -3,6 +3,7 @@ const commandPlayduoHandler = require("../../commands/playerduo/handler");
 const commandRentHandler = require("../../commands/thue/handler");
 const DISCORD_CONSTANTS = require("../../constants");
 const TransactionModel = require("../../../db/models/transactions");
+const commandStatisticHanlder = require("../../commands/thong-ke/handler");
 
 async function interactionCreateHandler(interaction) {
     const { commandName, customId } = interaction;
@@ -65,6 +66,10 @@ async function interactionCreateHandler(interaction) {
 
         case "playduo":
             await commandPlayduoHandler(interaction);
+            return;
+
+        case "thong-ke":
+            await commandStatisticHanlder(interaction);
             return;
 
         default:
