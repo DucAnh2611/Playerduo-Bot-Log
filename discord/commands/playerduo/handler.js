@@ -74,11 +74,22 @@ async function commandPlayduoHandler(interaction) {
         userId: getMember.user.id,
         guildId: interaction.guildId,
     });
+    const getBank = BANKS_LIST.find((bank) =>
+        [`(${bank.code}) - ${bank.name}`, bank.shortName].includes(
+            selections.bankCode
+        )
+    );
+    if (!getBank) {
+        await interaction.reply(
+            `Thông tin ngan-hang bị sai, vui lòng chọn lại`
+        );
+        return;
+    }
     const body = {
         userId: getMember.user.id,
         guildId: interaction.guildId,
         link: selections.link,
-        bankCode: selections.bankCode,
+        bankCode: getBank.shortName,
         bankNum: selections.bankNum,
         bankName: selections.bankName,
         price: selections.price,

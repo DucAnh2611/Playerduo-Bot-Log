@@ -186,7 +186,7 @@ SepayRoutes.post(
 
         chanelBill.send({
             embeds: [embed, ...[...history, body].map(createHistory)],
-            content: `<@${getUser.id}>, tớ chuyển khoản cho cậu, nhận được thì báo lại tớ nhé!! <3`,
+            content: `<@${getUser.id}>, tớ đã chuyển khoản cho cậu, nhận được thì báo lại tớ nhé!! <3`,
         });
 
         return res.json({ ok: true });
