@@ -18,7 +18,12 @@ async function commandPlayduoHandler(interaction) {
                     bank.shortName
                         .toLowerCase()
                         .includes(focusedValue.toLowerCase()) ||
-                    bank.code.toLowerCase().includes(focusedValue.toLowerCase())
+                    bank.code
+                        .toLowerCase()
+                        .includes(focusedValue.toLowerCase()) ||
+                    `(${bank.code}) - ${bank.name}`
+                        .toLowerCase()
+                        .includes(focusedValue.toLowerCase())
             );
 
             const choices = filteredBanks.slice(0, 5).map((bank) => ({
