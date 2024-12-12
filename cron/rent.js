@@ -112,16 +112,16 @@ const rentingJob = new CronJob("* * * * *", async function () {
                     text: "Chúc cậu có một trải nghiệm vui vẻ! Love ya <3",
                 });
 
-            await RentModel.updateOne(
-                {
-                    _id: rent._id,
-                },
-                { status: "ENDED", sentNoti: true }
-            );
+            // await RentModel.updateOne(
+            //     {
+            //         _id: rent._id,
+            //     },
+            //     { status: "ENDED", sentNoti: true }
+            // );
 
             channelNoti.send({
                 embeds: [embed],
-                content: `<@${rent.transaction.rentBy.id}> ơi, yêu cầu thuê có mã số ${transaction.code} của cậu với <@${rent.player.id}> đã kết thúc!`,
+                content: `<@${rent.transaction.rentBy}> ơi, yêu cầu thuê có mã số ${transaction.code} của cậu với <@${player.userId}> đã kết thúc!`,
             });
         })
     ).catch((e) => console.log(e));
