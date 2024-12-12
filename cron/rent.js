@@ -11,7 +11,7 @@ const rentingJob = new CronJob("* * * * *", async function () {
 
     const getIsRenting = await RentModel.find({
         status: "RENTING",
-        end: { $gte: new Date() },
+        end: { $lte: new Date() },
         sentNoti: false,
     })
         .populate("player")
@@ -88,6 +88,10 @@ const rentingJob = new CronJob("* * * * *", async function () {
                 .setTitle("Yêu cầu thuê đã hết thời gian")
                 .addFields([
                     {
+                        name: "Mã yêu cầu",
+                        value: transaction.code,
+                    },
+                    {
                         name: "Thời gian thuê",
                         value: convertTime(rent.start, 7).toLocaleString(),
                     },
@@ -112,12 +116,12 @@ const rentingJob = new CronJob("* * * * *", async function () {
                     text: "Chúc cậu có một trải nghiệm vui vẻ! Love ya <3",
                 });
 
-            // await RentModel.updateOne(
-            //     {
-            //         _id: rent._id,
-            //     },
-            //     { status: "ENDED", sentNoti: true }
-            // );
+            await RentModel.updateOne(
+                {
+                    _id: rent._id,
+                },
+                { status: "ENDED", sentNoti: true }
+            );
 
             channelNoti.send({
                 embeds: [embed],
