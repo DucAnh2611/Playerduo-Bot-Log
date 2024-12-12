@@ -162,7 +162,6 @@ const commandRentHandler = async (interaction) => {
     await interaction.reply({
         embeds: [embed],
         components: [row],
-        ephemeral: true,
     });
 };
 

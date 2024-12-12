@@ -111,10 +111,10 @@ async function commandPlayduoHandler(interaction) {
         }
     });
 
-    if (selections.bankCode) {
+    if (newData.bankCode) {
         const getBank = BANKS_LIST.find((bank) =>
             [`(${bank.code}) - ${bank.name}`, bank.shortName].includes(
-                selections.bankCode
+                newData.bankCode
             )
         );
         if (!getBank) {
@@ -123,7 +123,7 @@ async function commandPlayduoHandler(interaction) {
             );
             return;
         }
-        selections.bankCode = getBank.shortName;
+        newData.bankCode = getBank.shortName;
     }
 
     const body = {
@@ -140,7 +140,7 @@ async function commandPlayduoHandler(interaction) {
         const requiredFields = fields.filter((i) => i.required);
 
         for (const field of requiredFields) {
-            const fieldValue = selections[field.dbFieldName];
+            const fieldValue = newData[field.dbFieldName];
             if (!fieldValue) {
                 await interaction.reply(`Yêu cầu nhập trường ${field.name}`);
                 return;

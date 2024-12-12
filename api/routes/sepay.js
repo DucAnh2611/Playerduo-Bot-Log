@@ -83,17 +83,8 @@ SepayRoutes.post(
                         id: guild.id,
                         deny: [PermissionFlagsBits.ViewChannel],
                     },
-                    {
-                        id: player.id,
-                        allow: [
-                            PermissionFlagsBits.ViewChannel,
-                            PermissionFlagsBits.SendMessages,
-                            PermissionFlagsBits.ReadMessageHistory,
-                        ],
-                    },
                 ],
             });
-            console.log(`Channel "${channelName}" created successfully!`);
         }
 
         const chanelBill = guild.channels.cache.find(

@@ -1,5 +1,9 @@
-const { ButtonBuilder, EmbedBuilder } = require("discord.js");
-const DISCORD_CONSTANTS = require("../../constants");
+const {
+    EmbedBuilder,
+    Message,
+    ActionRow,
+    ActionRowBuilder,
+} = require("discord.js");
 const TransactionModel = require("../../../db/models/transactions");
 const commandPlayduoHandler = require("../../commands/playerduo/handler");
 const commandRentHandler = require("../../commands/thue/handler");
@@ -31,15 +35,18 @@ async function interactionCreateHandler(interaction) {
             const transaction = checkTransaction.toObject();
 
             if (action === "cancel_rent_btn") {
-                interaction.reply({
-                    content: `Bạn đã hủy bỏ yêu cầu mã: ${cardId}`,
-                    ephemeral: true,
-                });
-
                 await TransactionModel.updateOne(
                     { code: cardId },
                     { status: "CANCELLED" }
                 );
+
+                const message = await interaction.message;
+
+                await message.edit({ components: [] });
+                await interaction.reply({
+                    content: `Bạn đã hủy bỏ yêu cầu mã: ${cardId}`,
+                    ephemeral: true,
+                });
             } else if (action === "cf_rent_btn") {
                 const embed = new EmbedBuilder()
                     .setColor("Blue")
@@ -47,7 +54,10 @@ async function interactionCreateHandler(interaction) {
                     .setImage(transaction.paymentLink)
                     .setFooter({ text: "Vui lòng quét mã để thanh toán!" });
 
-                interaction.reply({
+                const message = await interaction.message;
+
+                await message.edit({ components: [] });
+                await interaction.reply({
                     embeds: [embed],
                     ephemeral: true,
                 });
