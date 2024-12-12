@@ -12,6 +12,7 @@ const rentingJob = new CronJob("*/5 * * * * *", async function () {
     const getIsRenting = await RentModel.find({
         status: "RENTING",
         end: { $gte: new Date() },
+        sentNoti: false,
     })
         .populate("player")
         .populate("transaction");
