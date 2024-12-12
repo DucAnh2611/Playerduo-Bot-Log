@@ -5,7 +5,7 @@ const { PermissionFlagsBits, ChannelType } = require("discord.js");
 const { EmbedBuilder } = require("discord.js");
 const convertTime = require("../util/time");
 
-const rentingJob = new CronJob("*/5 * * * * *", async function () {
+const rentingJob = new CronJob("* * * * *", async function () {
     const client = getClientDiscord();
     if (!client) return;
 
@@ -116,7 +116,7 @@ const rentingJob = new CronJob("*/5 * * * * *", async function () {
                 {
                     _id: rent._id,
                 },
-                { status: "ENDED" }
+                { status: "ENDED", sendNoti }
             );
 
             channelNoti.send({
