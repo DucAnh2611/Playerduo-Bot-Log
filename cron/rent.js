@@ -116,7 +116,7 @@ const rentingJob = new CronJob("* * * * *", async function () {
                 {
                     _id: rent._id,
                 },
-                { status: "ENDED", sendNoti: true }
+                { status: "ENDED", sentNoti: true }
             );
 
             channelNoti.send({
