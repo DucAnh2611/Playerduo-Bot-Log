@@ -48,6 +48,10 @@ SepayRoutes.post(
             }
         );
 
+        if (paid < findTransaction.total) {
+            return res.json({ ok: true });
+        }
+
         const rentInstance = new RentModel({
             player: transactionData.player,
             transaction: transactionData._id,
