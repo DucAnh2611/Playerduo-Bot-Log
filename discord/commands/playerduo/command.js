@@ -11,20 +11,20 @@ const DiscordCommandPlayduo = new SlashCommandBuilder()
         option
             .setName("ngan-hang")
             .setDescription("Ngân hàng")
-            .setRequired(true)
+            .setRequired(false)
             .setAutocomplete(true)
     )
     .addStringOption((option) =>
         option
             .setName("so-tai-khoan")
             .setDescription("Số tài khoản")
-            .setRequired(true)
+            .setRequired(false)
     )
     .addIntegerOption((option) =>
         option
             .setName("gia-tien")
             .setDescription("Giá tiền (theo giờ)")
-            .setRequired(true)
+            .setRequired(false)
     )
     .addStringOption((option) =>
         option

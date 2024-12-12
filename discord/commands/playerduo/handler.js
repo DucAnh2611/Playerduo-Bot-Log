@@ -1,4 +1,3 @@
-const e = require("cors");
 const BANKS_LIST = require("../../../const/bank");
 const PlayerModel = require("../../../db/models/player");
 
@@ -38,11 +37,6 @@ async function commandPlayduoHandler(interaction) {
 
     const selections = {
         player: options.getUser("player"),
-        bankCode: options.getString("ngan-hang"),
-        bankNum: options.getString("so-tai-khoan"),
-        bankName: options.getString("ten-tai-khoan") || null,
-        price: options.getInteger("gia-tien"),
-        link: options.getString("link") || null,
     };
 
     const getMember = interaction.guild.members.cache.find(
@@ -75,42 +69,91 @@ async function commandPlayduoHandler(interaction) {
         return;
     }
 
+    const fields = [
+        {
+            name: "ngan-hang",
+            get: "getString",
+            dbFieldName: "bankCode",
+            required: true,
+        },
+        {
+            name: "so-tai-khoan",
+            get: "getString",
+            dbFieldName: "bankNum",
+            required: true,
+        },
+        {
+            name: "gia-tien",
+            get: "getInteger",
+            dbFieldName: "price",
+            required: true,
+        },
+
+        {
+            name: "ten-tai-khoan",
+            get: "getString",
+            dbFieldName: "bankName",
+            required: false,
+        },
+        {
+            name: "link",
+            get: "getString",
+            dbFieldName: "link",
+            required: false,
+        },
+    ];
+
+    const newData = {};
+    fields.forEach((field) => {
+        const fieldValue = options[field.get](field.name);
+        if (fieldValue) {
+            newData[field.dbFieldName] = fieldValue;
+        }
+    });
+
+    if (selections.bankCode) {
+        const getBank = BANKS_LIST.find((bank) =>
+            [`(${bank.code}) - ${bank.name}`, bank.shortName].includes(
+                selections.bankCode
+            )
+        );
+        if (!getBank) {
+            await interaction.reply(
+                `Thông tin ngan-hang bị sai, vui lòng chọn lại`
+            );
+            return;
+        }
+        selections.bankCode = getBank.shortName;
+    }
+
+    const body = {
+        userId: getMember.user.id,
+        guildId: interaction.guildId,
+        ...newData,
+    };
+
     let player = await PlayerModel.findOne({
         userId: getMember.user.id,
         guildId: interaction.guildId,
     });
-    const getBank = BANKS_LIST.find((bank) =>
-        [`(${bank.code}) - ${bank.name}`, bank.shortName].includes(
-            selections.bankCode
-        )
-    );
-    if (!getBank) {
-        await interaction.reply(
-            `Thông tin ngan-hang bị sai, vui lòng chọn lại`
-        );
-        return;
-    }
-    const body = {
-        userId: getMember.user.id,
-        guildId: interaction.guildId,
-        link: selections.link,
-        bankCode: getBank.shortName,
-        bankNum: selections.bankNum,
-        bankName: selections.bankName,
-        price: selections.price,
-    };
-
     if (!player) {
+        const requiredFields = fields.filter((i) => i.required);
+
+        for (const field of requiredFields) {
+            const fieldValue = selections[field.dbFieldName];
+            if (!fieldValue) {
+                await interaction.reply(`Yêu cầu nhập trường ${field.name}`);
+                return;
+            }
+        }
+
         const playerInstance = new PlayerModel(body);
         await playerInstance.save();
     } else {
-        const { _id, ...dataP } = player.toObject();
-
         await PlayerModel.updateOne(
             { _id: player._id },
             {
-                ...dataP,
-                ...body,
+                ...newData,
             }
         );
     }

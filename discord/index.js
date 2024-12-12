@@ -30,11 +30,6 @@ const InitClientDiscord = () => {
         client.on("ready", () => {
             console.log(`Logged in as ${client.user.tag}!`);
             clientDiscord = client;
-
-            client.user.setActivity("Tớ là bot", {
-                type: "STREAMING",
-                url: "",
-            });
         });
 
         roleSelection(client);

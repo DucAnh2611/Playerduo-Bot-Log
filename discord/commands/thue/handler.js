@@ -12,7 +12,7 @@ const commandRentHandler = async (interaction) => {
         return;
     }
 
-    const { commandName, options } = interaction;
+    const { options } = interaction;
 
     const selections = {
         player: options.getUser("player"),
@@ -59,6 +59,17 @@ const commandRentHandler = async (interaction) => {
         return;
     }
 
+    const checkIsPendingTransaction = await TransactionModel.findOne({
+        status: "PENDING",
+        player: searchPlayer._id,
+    });
+    if (checkIsPendingTransaction) {
+        await interaction.reply(
+            "Bạn đã tạo yêu cầu thuê người này, vui lòng xác nhận hoặc hủy yêu cầu!"
+        );
+        return;
+    }
+
     const playerData = searchPlayer.toObject();
 
     const userAvatarURL = getMember.displayAvatarURL({
@@ -74,6 +85,7 @@ const commandRentHandler = async (interaction) => {
 
     const transactionInstance = new TransactionModel({
         player: searchPlayer._id,
+        rentBy: interaction.user.id,
         snapshot: {
             duration: selections.duration,
             price: price,

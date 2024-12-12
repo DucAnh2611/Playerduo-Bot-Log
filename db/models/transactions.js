@@ -6,6 +6,7 @@ const EXPIRED_MINUTES = 60;
 const TransactionSchema = new mongoose.Schema(
     {
         player: { type: mongoose.Schema.Types.ObjectId, ref: "player" },
+        rentBy: { type: String, required: true },
         code: { type: String, required: false },
         status: { type: String, default: "PENDING" },
         expiredAt: { type: Date, required: false },

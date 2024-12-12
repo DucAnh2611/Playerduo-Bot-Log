@@ -1,10 +1,10 @@
 const cron = require("cron");
 const https = require("https");
 const http = require("http");
-const Configs = require("./configs");
+const Configs = require("../configs");
 
 const backendUrl = Configs.app.url;
-const job = new cron.CronJob("*/14 * * * *", function () {
+const restartJob = new cron.CronJob("*/14 * * * *", function () {
     console.log("Restarting server at:", backendUrl + "/restart");
 
     const method = Configs.app.env === "dev" ? http : https;
@@ -22,4 +22,4 @@ const job = new cron.CronJob("*/14 * * * *", function () {
         });
 });
 
-module.exports = { job };
+module.exports = restartJob;

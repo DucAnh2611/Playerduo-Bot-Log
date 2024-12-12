@@ -9,6 +9,7 @@ const { getClientDiscord } = require("../../discord");
 const BANKS_LIST = require("../../const/bank");
 const CheckApiKey = require("../../middleware/api-key");
 const convertTime = require("../../util/time");
+const RentModel = require("../../db/models/rent");
 
 const SepayRoutes = require("express").Router();
 
@@ -46,6 +47,16 @@ SepayRoutes.post(
                 status: total <= paid ? "PAID" : "PENDING",
             }
         );
+
+        const rentInstance = new RentModel({
+            player: transactionData.player,
+            transaction: transactionData._id,
+
+            duration: transactionData.snapshot.duration,
+            price: transactionData.snapshot.price,
+        });
+
+        await rentInstance.save();
 
         const client = getClientDiscord();
         const guild = await client.guilds.fetch(player.guildId);
