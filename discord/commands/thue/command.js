@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("discord.js");
-const DISCORD_CONSTANTS = require("../../constants");
 
 const DiscordCommandsRent = new SlashCommandBuilder()
     .setName("thue")

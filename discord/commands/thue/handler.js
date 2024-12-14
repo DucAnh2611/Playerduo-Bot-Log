@@ -6,6 +6,7 @@ const {
 } = require("discord.js");
 const PlayerModel = require("../../../db/models/player");
 const TransactionModel = require("../../../db/models/transactions");
+const { BUTTON_RENTING_CARD } = require("../../../const/buttons");
 
 const commandRentHandler = async (interaction) => {
     if (!interaction.isCommand()) {
@@ -146,12 +147,12 @@ const commandRentHandler = async (interaction) => {
         });
 
     const confirmBtn = new ButtonBuilder()
-        .setCustomId(`cf_rent_btn-${cardId}`)
+        .setCustomId(BUTTON_RENTING_CARD.confirm.getId(cardId))
         .setLabel("Xác nhận")
         .setStyle(ButtonStyle.Success);
 
     const cancelBtn = new ButtonBuilder()
-        .setCustomId(`cancel_rent_btn-${cardId}`)
+        .setCustomId(BUTTON_RENTING_CARD.cancel.getId(cardId))
         .setLabel("Hủy")
         .setStyle(ButtonStyle.Danger);
 

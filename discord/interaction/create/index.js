@@ -1,93 +1,30 @@
-const {
-    EmbedBuilder,
-    Message,
-    ActionRow,
-    ActionRowBuilder,
-} = require("discord.js");
-const TransactionModel = require("../../../db/models/transactions");
-const commandPlayduoHandler = require("../../commands/playerduo/handler");
-const commandRentHandler = require("../../commands/thue/handler");
-const commandStatisticHanlder = require("../../commands/thong-ke/handler");
+const interactionCreateButtonHandler = require("./buttons");
+const interactionCreateCommandsHandler = require("./commands");
+const interactionCreateAutoCompleteHandler = require("./auto-completes");
 
 async function interactionCreateHandler(interaction) {
-    const { commandName, customId } = interaction;
+    const checks = [
+        {
+            check: "isButton",
+            callback: interactionCreateButtonHandler,
+        },
+        {
+            check: "isCommand",
+            callback: interactionCreateCommandsHandler,
+        },
+        {
+            check: "isAutocomplete",
+            callback: interactionCreateAutoCompleteHandler,
+        },
+    ];
 
-    if (interaction.isButton()) {
-        const [action, ...cardIds] = customId.split("-");
-
-        const cardId = cardIds.join("-");
-        try {
-            const checkTransaction = await TransactionModel.findOne({
-                code: cardId,
-                status: "PENDING",
-                expiredAt: {
-                    $gte: new Date(),
-                },
-            });
-            if (!checkTransaction) {
-                interaction.reply({
-                    content: `Giao dịch không hợp lệ!`,
-                    ephemeral: true,
-                });
-                return;
-            }
-
-            const transaction = checkTransaction.toObject();
-
-            if (action === "cancel_rent_btn") {
-                await TransactionModel.updateOne(
-                    { code: cardId },
-                    { status: "CANCELLED" }
-                );
-
-                const message = await interaction.message;
-
-                await message.edit({ components: [] });
-                await interaction.reply({
-                    content: `Bạn đã hủy bỏ yêu cầu mã: ${cardId}`,
-                    ephemeral: true,
-                });
-            } else if (action === "cf_rent_btn") {
-                const embed = new EmbedBuilder()
-                    .setColor("Blue")
-                    .setTitle("Chuyển khoản")
-                    .setImage(transaction.paymentLink)
-                    .setFooter({ text: "Vui lòng quét mã để thanh toán!" });
-
-                const message = await interaction.message;
-
-                await message.edit({ components: [] });
-                await interaction.reply({
-                    embeds: [embed],
-                    ephemeral: true,
-                });
-            }
-        } catch (err) {
-            console.log(err);
+    for (const { check, callback } of checks) {
+        if (interaction[check] && interaction[check]()) {
+            return callback(interaction);
         }
-
-        return;
     }
 
-    switch (commandName) {
-        case "thue":
-            await commandRentHandler(interaction);
-            return;
-
-        case "playduo":
-            await commandPlayduoHandler(interaction);
-            return;
-
-        case "thong-ke":
-            await commandStatisticHanlder(interaction);
-            return;
-
-        default:
-            await interaction.reply(
-                "Tớ đang code, chưa có chức năng gì hết hehe!"
-            );
-            return;
-    }
+    return;
 }
 
 module.exports = interactionCreateHandler;

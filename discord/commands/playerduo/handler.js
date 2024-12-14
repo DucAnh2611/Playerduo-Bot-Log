@@ -3,37 +3,6 @@ const PlayerModel = require("../../../db/models/player");
 
 async function commandPlayduoHandler(interaction) {
     const { options } = interaction;
-    if (!interaction.isCommand()) {
-        if (
-            options.getFocused(true).name === "ngan-hang" &&
-            interaction.isAutocomplete()
-        ) {
-            const focusedValue = interaction.options.getFocused();
-            const filteredBanks = BANKS_LIST.filter(
-                (bank) =>
-                    bank.name
-                        .toLowerCase()
-                        .includes(focusedValue.toLowerCase()) ||
-                    bank.shortName
-                        .toLowerCase()
-                        .includes(focusedValue.toLowerCase()) ||
-                    bank.code
-                        .toLowerCase()
-                        .includes(focusedValue.toLowerCase()) ||
-                    `(${bank.code}) - ${bank.name}`
-                        .toLowerCase()
-                        .includes(focusedValue.toLowerCase())
-            );
-
-            const choices = filteredBanks.slice(0, 5).map((bank) => ({
-                name: `(${bank.code}) - ${bank.name}`,
-                value: bank.shortName,
-            }));
-
-            await interaction.respond(choices);
-        }
-        return;
-    }
 
     const selections = {
         player: options.getUser("player"),

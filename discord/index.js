@@ -1,9 +1,8 @@
 const {
     Client,
     IntentsBitField,
-    Routes,
-    EmbedBuilder,
     Partials,
+    ActivityType,
 } = require("discord.js");
 const Configs = require("../configs");
 const RegistryDiscordCommands = require("./commands");
@@ -25,18 +24,37 @@ const InitClientDiscord = () => {
             ],
             partials: [Partials.Message, Partials.Reaction, Partials.User],
         });
+
         client.login(Configs.discord.discord_bot_token);
 
-        client.on("ready", () => {
-            console.log(`Logged in as ${client.user.tag}!`);
-            clientDiscord = client;
+        const regisEvents = [
+            {
+                name: "ready",
+                handler: () => {
+                    console.log(`Logged in as ${client.user.tag}!`);
+                    clientDiscord = client;
+
+                    client.user.setActivity({
+                        type: ActivityType.Listening,
+                        name: "/thue",
+                    });
+                },
+            },
+            {
+                name: "interactionCreate",
+                handler: interactionCreateHandler,
+            },
+            {
+                name: "guildMemberAdd",
+                handler: guildMemberAddHandler,
+            },
+        ];
+
+        regisEvents.forEach((event) => {
+            client.on(event.name, event.handler);
         });
 
         roleSelection(client);
-
-        client.on("interactionCreate", interactionCreateHandler);
-
-        client.on("guildMemberAdd", guildMemberAddHandler);
 
         RegistryDiscordCommands();
     } catch (err) {

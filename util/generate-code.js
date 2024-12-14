@@ -23,8 +23,20 @@ const generateCode = (length, mode) => {
         const randomIndex = Math.floor(Math.random() * charSet.length);
         code += charSet[randomIndex];
     }
-    const uniqueCode = code + Date.now().toString();
 
+    let uniquePart = "";
+    const timestamp = Date.now().toString();
+
+    if (mode === "numbers") {
+        uniquePart = timestamp;
+    } else {
+        for (let i = 0; i < timestamp.length; i++) {
+            const randomIndex = Math.floor(Math.random() * charSet.length);
+            uniquePart += charSet[randomIndex];
+        }
+    }
+
+    const uniqueCode = code + uniquePart;
     return uniqueCode;
 };
 
