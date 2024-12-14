@@ -67,7 +67,7 @@ const commandInfoHandler = async (interaction) => {
         .addFields([
             {
                 name: "Tên",
-                value: getMember.nickname || getMember.user.username,
+                value: getMember.nickname || getMember.user.globalName,
             },
             {
                 name: "Tài khoản thanh toán",
