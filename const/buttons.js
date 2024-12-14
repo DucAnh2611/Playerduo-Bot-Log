@@ -21,6 +21,22 @@ const BUTTON_RENTING_CARD = {
             .replace("<ACTION>", action),
 };
 
+const BUTTON_INFO_CARD = {
+    rent: {
+        format: "<ACTION>-<ID>",
+        action: "rent_info",
+        getId: (id) =>
+            BUTTON_INFO_CARD.rent.format
+                .replace("<ID>", id)
+                .replace("<ACTION>", BUTTON_INFO_CARD.rent.action),
+    },
+    getIdFormated: (type, action, id) =>
+        BUTTON_INFO_CARD[type].format
+            .replace("<ID>", id)
+            .replace("<ACTION>", action),
+};
+
 module.exports = {
     BUTTON_RENTING_CARD,
+    BUTTON_INFO_CARD,
 };

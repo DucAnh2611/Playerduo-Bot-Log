@@ -9,6 +9,8 @@ const interactionCreateButtonHandler = async (interaction) => {
         }
     }
 
+    await interaction.reply("Có vẻ như có lỗi tại nút cậu vừa ấn!");
+
     return;
 };
 

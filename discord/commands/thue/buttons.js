@@ -13,7 +13,7 @@ const isRentingButton = (interaction) => {
 
     for (const type of buttonTypes) {
         if (
-            BUTTON_RENTING_CARD[type] &&
+            !!BUTTON_RENTING_CARD[type]?.getId &&
             BUTTON_RENTING_CARD[type].getId(cardId) ===
                 BUTTON_RENTING_CARD.getIdFormated(type, action, cardId)
         ) {

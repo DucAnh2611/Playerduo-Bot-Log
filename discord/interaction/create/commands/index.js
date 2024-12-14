@@ -1,4 +1,5 @@
 const commandPlayduoHandler = require("../../../commands/playerduo/handler");
+const commandInfoHandler = require("../../../commands/thong-tin/handler");
 const commandRentHandler = require("../../../commands/thue/handler");
 
 const interactionCreateCommandsHandler = async (interaction) => {
@@ -11,6 +12,10 @@ const interactionCreateCommandsHandler = async (interaction) => {
 
         case "playduo":
             await commandPlayduoHandler(interaction);
+            return;
+
+        case "thong-tin":
+            await commandInfoHandler(interaction);
             return;
 
         default:
