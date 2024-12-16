@@ -125,7 +125,7 @@ const rentingJob = new CronJob("* * * * *", async function () {
 
             channelNoti.send({
                 embeds: [embed],
-                content: `<@${rent.transaction.rentBy}> ơi, yêu cầu thuê có mã số ${transaction.code} của cậu với <@${player.userId}> đã kết thúc!`,
+                content: `<@${rent.transaction.rentBy}>, yêu cầu thuê có mã \`${transaction.code}\` với <@${player.userId}> đã kết thúc!`,
             });
         })
     ).catch((e) => console.log(e));

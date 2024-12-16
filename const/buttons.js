@@ -21,22 +21,22 @@ const BUTTON_RENTING_CARD = {
             .replace("<ACTION>", action),
 };
 
-const BUTTON_INFO_CARD = {
-    rent: {
+const BUTTON_START_COUNT_TIME = {
+    start: {
         format: "<ACTION>-<ID>",
-        action: "rent_info",
+        action: "start_rent",
         getId: (id) =>
-            BUTTON_INFO_CARD.rent.format
+            BUTTON_START_COUNT_TIME.start.format
                 .replace("<ID>", id)
-                .replace("<ACTION>", BUTTON_INFO_CARD.rent.action),
+                .replace("<ACTION>", BUTTON_START_COUNT_TIME.start.action),
     },
     getIdFormated: (type, action, id) =>
-        BUTTON_INFO_CARD[type].format
+        BUTTON_START_COUNT_TIME[type].format
             .replace("<ID>", id)
             .replace("<ACTION>", action),
 };
 
 module.exports = {
     BUTTON_RENTING_CARD,
-    BUTTON_INFO_CARD,
+    BUTTON_START_COUNT_TIME,
 };

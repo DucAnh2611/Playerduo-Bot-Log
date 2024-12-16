@@ -2,6 +2,9 @@ const {
     EmbedBuilder,
     ChannelType,
     PermissionFlagsBits,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
 } = require("discord.js");
 const Configs = require("../../configs");
 const TransactionModel = require("../../db/models/transactions");
@@ -10,6 +13,7 @@ const BANKS_LIST = require("../../const/bank");
 const CheckApiKey = require("../../middleware/api-key");
 const convertTime = require("../../util/time");
 const RentModel = require("../../db/models/rent");
+const { BUTTON_START_COUNT_TIME } = require("../../const/buttons");
 
 const SepayRoutes = require("express").Router();
 
@@ -25,14 +29,24 @@ SepayRoutes.post(
         const findTransaction = await TransactionModel.findOne({
             code: transactionCode,
             status: "PENDING",
-            expiredAt: {
-                $gte: new Date(),
-            },
         }).populate("player");
         if (!findTransaction)
             return res
                 .status(404)
                 .json({ ok: false, message: "No transaction" });
+
+        if (new Date(findTransaction.expiredAt) <= new Date()) {
+            await TransactionModel.updateOne(
+                { _id: transactionData._id },
+                {
+                    status: "EXPIRED",
+                }
+            );
+
+            return res
+                .status(404)
+                .json({ ok: false, message: "No transaction" });
+        }
 
         const transactionData = findTransaction.toObject();
         const { total, totalPaid, history, player } = transactionData;
@@ -51,16 +65,6 @@ SepayRoutes.post(
         if (paid < findTransaction.total) {
             return res.json({ ok: true });
         }
-
-        const rentInstance = new RentModel({
-            player: transactionData.player,
-            transaction: transactionData._id,
-
-            duration: transactionData.snapshot.duration,
-            price: transactionData.snapshot.price,
-        });
-
-        await rentInstance.save();
 
         const client = getClientDiscord();
         const guild = await client.guilds.fetch(player.guildId);
@@ -193,8 +197,20 @@ SepayRoutes.post(
             return historyEmbed;
         };
 
+        const startCountTimeRent = new ButtonBuilder()
+            .setCustomId(
+                BUTTON_START_COUNT_TIME.start.getId(transactionData.code)
+            )
+            .setLabel("Bắt đầu tính giờ")
+            .setStyle(ButtonStyle.Success);
+
+        const actionRow = new ActionRowBuilder().addComponents(
+            startCountTimeRent
+        );
+
         chanelBill.send({
             embeds: [embed, ...[...history, body].map(createHistory)],
+            components: [actionRow],
             content: `<@${getUser.id}>, tớ đã chuyển khoản cho cậu, nhận được thì báo lại tớ nhé!! <3`,
         });
 

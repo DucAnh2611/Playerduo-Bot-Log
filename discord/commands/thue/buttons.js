@@ -1,6 +1,10 @@
 const { EmbedBuilder } = require("discord.js");
 const TransactionModel = require("../../../db/models/transactions");
-const { BUTTON_RENTING_CARD } = require("../../../const/buttons");
+const {
+    BUTTON_RENTING_CARD,
+    BUTTON_START_COUNT_TIME,
+} = require("../../../const/buttons");
+const RentModel = require("../../../db/models/rent");
 
 const isRentingButton = (interaction) => {
     const { customId } = interaction;
@@ -9,15 +13,19 @@ const isRentingButton = (interaction) => {
     if (!action || !cardIds || (cardIds && !cardIds.length)) return false;
 
     const cardId = cardIds.join("-");
-    const buttonTypes = Object.keys(BUTTON_RENTING_CARD);
+    const buttonsList = [BUTTON_RENTING_CARD, BUTTON_START_COUNT_TIME];
 
-    for (const type of buttonTypes) {
-        if (
-            !!BUTTON_RENTING_CARD[type]?.getId &&
-            BUTTON_RENTING_CARD[type].getId(cardId) ===
-                BUTTON_RENTING_CARD.getIdFormated(type, action, cardId)
-        ) {
-            return true;
+    for (const button of buttonsList) {
+        const buttonTypes = Object.keys(button);
+
+        for (const type of buttonTypes) {
+            if (
+                !!button[type]?.getId &&
+                button[type].getId(cardId) ===
+                    button.getIdFormated(type, action, cardId)
+            ) {
+                return true;
+            }
         }
     }
 
@@ -71,6 +79,25 @@ const commandRentButtonHandler = async (interaction) => {
                 embeds: [embed],
                 ephemeral: true,
             });
+        } else if (action === BUTTON_START_COUNT_TIME.start.action) {
+            const transactionData = await TransactionModel.findOne({
+                code: transactionCode,
+                status: "PENDING",
+            }).populate("player");
+
+            const rentInstance = new RentModel({
+                player: transactionData.player,
+                transaction: transactionData._id,
+
+                duration: transactionData.snapshot.duration,
+                price: transactionData.snapshot.price,
+            });
+
+            await rentInstance.save();
+
+            await interaction.reply(
+                `Bắt đầu tính giờ yêu cầu: \`${transactionCode}\``
+            );
         }
     } catch (err) {
         console.log(err);
