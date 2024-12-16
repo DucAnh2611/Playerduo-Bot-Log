@@ -1,4 +1,9 @@
-const { EmbedBuilder } = require("discord.js");
+const {
+    EmbedBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ActionRowBuilder,
+} = require("discord.js");
 const TransactionModel = require("../../../db/models/transactions");
 const {
     BUTTON_RENTING_CARD,
@@ -61,9 +66,17 @@ const commandRentButtonHandler = async (interaction) => {
                 { status: "CANCELLED" }
             );
 
+            const buttonStatus = new ButtonBuilder()
+                .setCustomId(`button_status-${transaction.code}`)
+                .setStyle(ButtonStyle.Danger)
+                .setDisabled(true)
+                .setLabel("Đã hủy!");
+
+            const row = new ActionRowBuilder().addComponents(buttonStatus);
+
             const message = await interaction.message;
 
-            await message.edit({ components: [] });
+            await message.edit({ components: [row] });
             await interaction.reply({
                 content: `Bạn đã hủy bỏ yêu cầu mã: ${transactionCode}`,
                 ephemeral: true,
@@ -74,6 +87,17 @@ const commandRentButtonHandler = async (interaction) => {
                 .setTitle("Chuyển khoản")
                 .setImage(transaction.paymentLink)
                 .setFooter({ text: "Vui lòng quét mã để thanh toán!" });
+
+            const buttonStatus = new ButtonBuilder()
+                .setCustomId(`button_status-${transaction.code}`)
+                .setStyle(ButtonStyle.Success)
+                .setDisabled(true)
+                .setLabel("Đã xác nhận!");
+
+            const row = new ActionRowBuilder().addComponents(buttonStatus);
+
+            const message = await interaction.message;
+            await message.edit({ components: [row] });
 
             await interaction.reply({
                 embeds: [embed],
