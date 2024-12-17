@@ -45,7 +45,7 @@ const commandRentButtonHandler = async (interaction) => {
     try {
         const checkTransaction = await TransactionModel.findOne({
             code: transactionCode,
-            status: "PENDING",
+            status: "PAID",
             expiredAt: {
                 $gte: new Date(),
             },
