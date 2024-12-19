@@ -4,6 +4,7 @@ const RentModel = require("../db/models/rent");
 const { PermissionFlagsBits, ChannelType } = require("discord.js");
 const { EmbedBuilder } = require("discord.js");
 const convertTime = require("../util/time");
+const PlayerModel = require("../db/models/player");
 
 const rentingJob = new CronJob("* * * * *", async function () {
     const client = getClientDiscord();
@@ -116,17 +117,27 @@ const rentingJob = new CronJob("* * * * *", async function () {
                     text: "Chúc cậu có một trải nghiệm vui vẻ! Love ya <3",
                 });
 
-            await RentModel.updateOne(
-                {
-                    _id: rent._id,
-                },
-                { status: "ENDED", sentNoti: true }
-            );
+            return Promise.all([
+                RentModel.updateOne(
+                    {
+                        _id: rent._id,
+                    },
+                    { status: "ENDED", sentNoti: true }
+                ),
+                PlayerModel.updateOne(
+                    {
+                        _id: player._id,
+                    },
+                    {
+                        isRenting: false,
+                    }
+                ),
 
-            channelNoti.send({
-                embeds: [embed],
-                content: `<@${rent.transaction.rentBy}>, yêu cầu thuê có mã \`${transaction.code}\` với <@${player.userId}> đã kết thúc!`,
-            });
+                channelNoti.send({
+                    embeds: [embed],
+                    content: `<@${rent.transaction.rentBy}>, yêu cầu thuê có mã \`${transaction.code}\` với <@${player.userId}> đã kết thúc!`,
+                }),
+            ]);
         })
     ).catch((e) => console.log(e));
 });

@@ -59,6 +59,16 @@ const commandRentHandler = async (interaction) => {
         );
         return;
     }
+    if (searchPlayer.isRenting) {
+        await interaction.reply(
+            `${
+                getMember.nickname ||
+                getMember.user.globalName ||
+                getMember.user.username
+            } Đang được thuê`
+        );
+        return;
+    }
 
     const checkIsPendingTransaction = await TransactionModel.findOne({
         status: "PENDING",

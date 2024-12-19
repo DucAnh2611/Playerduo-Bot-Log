@@ -10,6 +10,7 @@ const {
     BUTTON_START_COUNT_TIME,
 } = require("../../../const/buttons");
 const RentModel = require("../../../db/models/rent");
+const PlayerModel = require("../../../db/models/player");
 
 const isRentingButton = (interaction) => {
     const { customId } = interaction;
@@ -43,24 +44,24 @@ const commandRentButtonHandler = async (interaction) => {
     const transactionCode = cardIds.join("-");
 
     try {
-        const checkTransaction = await TransactionModel.findOne({
-            code: transactionCode,
-            status: "PAID",
-            expiredAt: {
-                $gte: new Date(),
-            },
-        });
-        if (!checkTransaction) {
-            interaction.reply({
-                content: `Giao dịch không hợp lệ!`,
-                ephemeral: true,
-            });
-            return;
-        }
-
-        const transaction = checkTransaction.toObject();
-
         if (action === BUTTON_RENTING_CARD.cancel.action) {
+            const checkTransaction = await TransactionModel.findOne({
+                code: transactionCode,
+                status: "PENDING",
+                expiredAt: {
+                    $gte: new Date(),
+                },
+            });
+            if (!checkTransaction) {
+                interaction.reply({
+                    content: `Giao dịch không hợp lệ!`,
+                    ephemeral: true,
+                });
+                return;
+            }
+
+            const transaction = checkTransaction.toObject();
+
             await TransactionModel.updateOne(
                 { code: transactionCode },
                 { status: "CANCELLED" }
@@ -82,6 +83,23 @@ const commandRentButtonHandler = async (interaction) => {
                 ephemeral: true,
             });
         } else if (action === BUTTON_RENTING_CARD.confirm.action) {
+            const checkTransaction = await TransactionModel.findOne({
+                code: transactionCode,
+                status: "PENDING",
+                expiredAt: {
+                    $gte: new Date(),
+                },
+            });
+            if (!checkTransaction) {
+                interaction.reply({
+                    content: `Giao dịch không hợp lệ!`,
+                    ephemeral: true,
+                });
+                return;
+            }
+
+            const transaction = checkTransaction.toObject();
+
             const embed = new EmbedBuilder()
                 .setColor("Blue")
                 .setTitle("Chuyển khoản")
@@ -104,10 +122,21 @@ const commandRentButtonHandler = async (interaction) => {
                 ephemeral: true,
             });
         } else if (action === BUTTON_START_COUNT_TIME.start.action) {
-            const transactionData = await TransactionModel.findOne({
+            const checkTransaction = await TransactionModel.findOne({
                 code: transactionCode,
-                status: "PENDING",
-            }).populate("player");
+                status: "PAID",
+                expiredAt: {
+                    $gte: new Date(),
+                },
+            });
+            if (!checkTransaction) {
+                interaction.reply({
+                    content: `Giao dịch không hợp lệ!`,
+                    ephemeral: true,
+                });
+                return;
+            }
+            const transactionData = checkTransaction.toObject();
 
             const rentInstance = new RentModel({
                 player: transactionData.player,
@@ -117,11 +146,35 @@ const commandRentButtonHandler = async (interaction) => {
                 price: transactionData.snapshot.price,
             });
 
-            await rentInstance.save();
+            const rentSaved = await rentInstance.save();
 
-            await interaction.reply(
-                `Bắt đầu tính giờ yêu cầu: \`${transactionCode}\``
-            );
+            const startTime = new Date(rentSaved.start).toLocaleString("vi");
+            const endTime = new Date(rentSaved.end).toLocaleString("vi");
+
+            const buttonStatus = new ButtonBuilder()
+                .setCustomId(`button_counted-${transactionData.code}`)
+                .setStyle(ButtonStyle.Success)
+                .setDisabled(true)
+                .setLabel(`Bắt đầu lúc ${startTime}`);
+
+            const row = new ActionRowBuilder().addComponents(buttonStatus);
+
+            const message = await interaction.message;
+            await message.edit({ components: [row] });
+
+            await Promise.all([
+                interaction.reply(
+                    `Bắt đầu tính giờ yêu cầu: \`${transactionCode}\` lúc \`${startTime}\` dự kiến kết thúc \`${endTime}\``
+                ),
+                PlayerModel.updateOne(
+                    {
+                        _id: transactionData.player,
+                    },
+                    {
+                        isRenting: true,
+                    }
+                ),
+            ]);
         }
     } catch (err) {
         console.log(err);

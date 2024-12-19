@@ -9,6 +9,7 @@ const PlayerSchema = new mongoose.Schema(
         bankNum: { type: String, required: true },
         bankName: { type: String, required: false, default: null },
         price: { type: Number, required: true },
+        isRenting: { type: Boolean, required: false, default: false },
     },
     { timestamps: true }
 );
