@@ -60,7 +60,7 @@ const commandInfoHandler = async (interaction) => {
     });
 
     const embed = new EmbedBuilder()
-        .setColor("Orange")
+        .setColor(!!player.isRenting ? "Orange" : "Aqua")
         .setTitle("Thông tin Duo")
         .setThumbnail(userAvatarURL)
         .setTimestamp(new Date())
@@ -83,6 +83,10 @@ const commandInfoHandler = async (interaction) => {
             {
                 name: "Link",
                 value: player.link || "Chưa có thông tin!",
+            },
+            {
+                name: "Tình trạng",
+                value: player.isRenting ? "Đang được thuê" : "Đang rảnh",
             },
         ])
         .setFooter({
