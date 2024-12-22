@@ -11,6 +11,7 @@ const {
 } = require("../../../const/buttons");
 const RentModel = require("../../../db/models/rent");
 const PlayerModel = require("../../../db/models/player");
+const convertTime = require("../../../util/time");
 
 const isRentingButton = (interaction) => {
     const { customId } = interaction;
@@ -148,8 +149,14 @@ const commandRentButtonHandler = async (interaction) => {
 
             const rentSaved = await rentInstance.save();
 
-            const startTime = new Date(rentSaved.start).toLocaleString("vi");
-            const endTime = new Date(rentSaved.end).toLocaleString("vi");
+            const startTime = convertTime(
+                new Date(rentSaved.start),
+                7
+            ).toLocaleString("vi");
+            const endTime = convertTime(
+                new Date(rentSaved.end),
+                7
+            ).toLocaleString("vi");
 
             const buttonStatus = new ButtonBuilder()
                 .setCustomId(`button_counted-${transactionData.code}`)
